@@ -71,6 +71,8 @@ export const Full = (props: FullProps, { element }: { element: HTMLElement }) =>
             titleBackgroundColor={props.theme?.chatWindow?.titleBackgroundColor}
             welcomeMessage={props.theme?.chatWindow?.welcomeMessage}
             errorMessage={props.theme?.chatWindow?.errorMessage}
+            hideSourceDocs={props.theme?.chatWindow?.hideSourceDocs}
+            replaceSourceIds={props.theme?.chatWindow?.replaceSourceIds}
             poweredByTextColor={props.theme?.chatWindow?.poweredByTextColor}
             textInput={props.theme?.chatWindow?.textInput}
             botMessage={props.theme?.chatWindow?.botMessage}

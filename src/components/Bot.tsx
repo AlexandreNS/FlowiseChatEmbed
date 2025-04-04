@@ -36,6 +36,8 @@ import { removeLocalStorageChatHistory, getLocalStorageChatflow, setLocalStorage
 import { cloneDeep } from 'lodash';
 import { FollowUpPromptBubble } from '@/components/bubbles/FollowUpPromptBubble';
 import { fetchEventSource, EventStreamContentType } from '@microsoft/fetch-event-source';
+import { replaceSourceIdsWithDescriptions } from '@/utils/customMessage';
+import { ReplaceSourceIds } from '@/types';
 
 export type FileEvent<T = EventTarget> = {
   target: T;
@@ -148,6 +150,8 @@ export type BotProps = {
   isFullPage?: boolean;
   footer?: FooterTheme;
   sourceDocsTitle?: string;
+  hideSourceDocs?: boolean;
+  replaceSourceIds?: ReplaceSourceIds;
   observersConfig?: observersConfigType;
   starterPrompts?: string[] | Record<string, { prompt: string }>;
   starterPromptFontSize?: number;
@@ -403,6 +407,13 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
     setMessages((data) => {
       const updated = data.map((item, i) => {
         if (i === data.length - 1) {
+          if (props?.replaceSourceIds) {
+            item.message = replaceSourceIdsWithDescriptions(item.message, {
+              context: sourceDocuments,
+              getDescriptionById: (id, docs) => docs?.[id]?.metadata?.[props?.replaceSourceIds?.metadata as string] || null,
+            });
+          }
+
           return { ...item, sourceDocuments };
         }
         return item;
@@ -1473,6 +1484,7 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
                         showAgentMessages={props.showAgentMessages}
                         handleActionClick={(label, action) => handleActionClick(label, action)}
                         sourceDocsTitle={props.sourceDocsTitle}
+                        hideSourceDocs={props.hideSourceDocs}
                         handleSourceDocumentsClick={(sourceDocuments) => {
                           setSourcePopupSrc(sourceDocuments);
                           setSourcePopupOpen(true);
@@ -1623,12 +1635,6 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               />
             )}
           </div>
-          <Badge
-            footer={props.footer}
-            badgeBackgroundColor={props.badgeBackgroundColor}
-            poweredByTextColor={props.poweredByTextColor}
-            botContainer={botContainer}
-          />
         </div>
       </div>
       {sourcePopupOpen() && <Popup isOpen={sourcePopupOpen()} value={sourcePopupSrc()} onClose={() => setSourcePopupOpen(false)} />}

@@ -1,3 +1,4 @@
+import { ReplaceSourceIds } from '@/types';
 export type BubbleParams = {
     theme?: BubbleTheme;
 };
@@ -63,6 +64,8 @@ export type ChatWindowTheme = {
     feedback?: FeedbackTheme;
     footer?: FooterTheme;
     sourceDocsTitle?: string;
+    hideSourceDocs?: boolean;
+    replaceSourceIds: ReplaceSourceIds;
     poweredByTextColor?: string;
     starterPrompts?: string[];
     starterPromptFontSize?: number;

@@ -28,6 +28,7 @@ type Props = {
   dateTimeToggle?: DateTimeToggleTheme;
   showAgentMessages?: boolean;
   sourceDocsTitle?: string;
+  hideSourceDocs?: boolean;
   renderHTML?: boolean;
   handleActionClick: (label: string, action: IAction | undefined | null) => void;
   handleSourceDocumentsClick: (src: any) => void;
@@ -423,7 +424,7 @@ export const BotBubble = (props: Props) => {
         </div>
       </div>
       <div>
-        {props.message.sourceDocuments && props.message.sourceDocuments.length && (
+        {props.message.sourceDocuments && props.message.sourceDocuments.length && !props.hideSourceDocs && (
           <>
             <Show when={props.sourceDocsTitle}>
               <span class="px-2 py-[10px] font-semibold">{props.sourceDocsTitle}</span>

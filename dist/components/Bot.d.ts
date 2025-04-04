@@ -1,6 +1,7 @@
 import { FeedbackRatingType } from '@/queries/sendMessageQuery';
 import { BotMessageTheme, FooterTheme, TextInputTheme, UserMessageTheme, FeedbackTheme, DisclaimerPopUpTheme, DateTimeToggleTheme } from '@/features/bubble/types';
 import { FilePreview } from '@/components/inputs/textInput/components/FilePreview';
+import { ReplaceSourceIds } from '@/types';
 export type FileEvent<T = EventTarget> = {
     target: T;
 };
@@ -93,6 +94,8 @@ export type BotProps = {
     isFullPage?: boolean;
     footer?: FooterTheme;
     sourceDocsTitle?: string;
+    hideSourceDocs?: boolean;
+    replaceSourceIds?: ReplaceSourceIds;
     observersConfig?: observersConfigType;
     starterPrompts?: string[] | Record<string, {
         prompt: string;

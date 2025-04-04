@@ -142,6 +142,8 @@ export const Bubble = (props: BubbleProps) => {
               fontSize={bubbleProps.theme?.chatWindow?.fontSize}
               footer={bubbleProps.theme?.chatWindow?.footer}
               sourceDocsTitle={bubbleProps.theme?.chatWindow?.sourceDocsTitle}
+              hideSourceDocs={bubbleProps.theme?.chatWindow?.hideSourceDocs}
+              replaceSourceIds={bubbleProps.theme?.chatWindow?.replaceSourceIds}
               starterPrompts={bubbleProps.theme?.chatWindow?.starterPrompts}
               starterPromptFontSize={bubbleProps.theme?.chatWindow?.starterPromptFontSize}
               chatflowid={props.chatflowid}
