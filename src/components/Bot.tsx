@@ -1436,7 +1436,9 @@ export const Bot = (botProps: BotProps & { class?: string }) => {
               sendButtonColor={props.bubbleTextColor}
               type="button"
               isDisabled={messages().length === 1}
-              class="my-2 ml-2"
+              class="my-2 ml-2 mr-14"
+              // TODO custom DeleteButton position
+              // class="my-2 ml-2"
               on:click={clearChat}
             >
               <span style={{ 'font-family': 'Poppins, sans-serif' }}>Clear</span>
