@@ -1,45 +1,236 @@
-<!--
-  NOTE: This .html file (and public folder) is optional and can be safely deleted.
-  It serves only as a demo/test page.
-  
-  The chatbot can be embedded directly on any allowed domain using the embed script that
-  is generated when starting the server.
--->
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flowise Chatbot Widget</title>
+    <title>Configuração do Chatbot</title>
+    <script>
+        const datasets = [
+            {
+                disciplina: "Políticas Públicas e Direitos à Saúde para População LGBT",
+                professor: "Anna Pereira",
+                categoria: "Centro de Estudos/CES",
+                playlists: [
+                    "Unidade 1",
+                    "Unidade 2"
+                ]
+            },
+            {
+                disciplina: "Saúde Física e Mental da População LGBTQIA+",
+                professor: "Thainã Dionísio",
+                categoria: "Centro de Estudos/CES",
+                playlists: [
+                    "Unidade 1",
+                    "Unidade 2",
+                    "Unidade 3",
+                    "Unidade 4",
+                ]
+            },
+            {
+                disciplina: "Processos de Inovação e Design Thinking",
+                professor: "Paula Faria",
+                categoria: "Centro de Estudos/CETEC",
+                playlists: [
+                    "Unidade 1",
+                    "Unidade 2",
+                    "Unidade 3",
+                    "Unidade 4",
+                ]
+            }
+        ].map(({ disciplina, professor, categoria, playlists }) => {
+            return playlists.map(playlist => ({
+                disciplina,
+                professor,
+                categoria,
+                playlist
+            }))
+        }).flat();
+
+        function getParametroUrl(nome) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(nome);
+        }
+
+        function popularSelect() {
+            const select = document.getElementById("datasetSelect");
+            for (let [key, dataset] of Object.entries(datasets)) {
+                let option = document.createElement("option");
+                option.value = key;
+                option.textContent = `${dataset.disciplina} - ${dataset.playlist}`
+                select.appendChild(option);
+            }
+        }
+
+        function atualizarChatbot() {
+            const select = document.getElementById("datasetSelect");
+            const url = new URL(window.location.href);
+
+            url.searchParams.set('dataset', select.value);
+            window.location.href = url.toString();
+        }
+
+        const datasetUrl = (datasets[getParametroUrl("dataset")] && getParametroUrl("dataset")) || 0;
+        const datasetConfig = datasets[datasetUrl];
+
+        window.onload = function () {
+            popularSelect();
+
+            if (datasets[datasetUrl]) {
+                document.getElementById("datasetSelect").value = datasetUrl;
+            }
+
+            document.getElementById("configJson").textContent = JSON.stringify(datasets[datasetUrl], null, 2);
+
+        };
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .wraper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            max-width: 720px;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            margin: 0 auto;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        #chatbotContainer {
+            border: 2px solid #ccc;
+            width: 100%;
+            max-width: 920px;
+            min-height: 100%;
+            margin: 0 auto;
+            flex: 1;
+            background: #f9f9f9;
+            text-align: left;
+        }
+    </style>
 </head>
 
 <body>
-    <div id="root"></div>
-    <script type="module">
-        import Chatbot from './web.js'
-        
-        // Example initialization:
-        // If your .env contains:
-        // agent1=xyz789-uvw456,https://example.com
-        // support=abc123-def456,https://example.com
-        // salesbot=ghi123-jkl456,https://example.com
-        //
-        // Then use the environment variable name as chatflowid:
-        Chatbot.init({
-            chatflowid: 'agent1',    // or 'support', 'salesbot', etc.
-            apiHost: window.location.origin,
-            theme: {
-                chatWindow: {
-                    hideSourceDocs: true,
-                    replaceSourceIds: {
-                        metadata: 'categoria',
+<div class="wraper">
+    <div class="container">
+        <h3>Configuração do Chatbot</h3>
+        <label for="datasetSelect"><strong>Selecione uma fonte de dados:</strong></label>
+        <select id="datasetSelect" onchange="atualizarChatbot()"></select>
+
+        <pre id="configJson"></pre>
+    </div>
+
+    <div id="chatbotContainer">
+        <flowise-fullchatbot id="chatbot"></flowise-fullchatbot>
+        <script type="module">
+            import Chatbot from './web.js'
+
+            Chatbot.initFull({
+                chatflowid: 'chatflow_tirar_duvidas,python-para-inteligencia-artificial-paulo-martins-cetec-unidade-4',
+                // apiHost: 'https://rapid-mother-production.up.railway.app',
+                // apiHost: '',
+                chatflowConfig: {
+                    qdrantFilter: {
+                        must: [
+                            {
+                                key: "metadata.disciplina",
+                                match: {
+                                    value: datasetConfig.disciplina
+                                }
+                            },
+                            {
+                                key: "metadata.professor",
+                                match: {
+                                    value: datasetConfig.professor
+                                }
+                            },
+                            {
+                                key: "metadata.categoria",
+                                match: {
+                                    value: datasetConfig.categoria
+                                }
+                            },
+                            {
+                                key: "metadata.playlist",
+                                match: {
+                                    value: datasetConfig.playlist
+                                }
+                            }
+                        ]
+                    }
+                },
+                theme: {
+                    button: {
+                        backgroundColor: '#682a3c',
+                        iconColor: 'white',
+                    },
+                    chatWindow: {
+                        hideSourceDocs: false,
+                        replaceSourceIds: {
+                            metadata: 'aula',
+                        },
+                        showTitle: true,
+                        showAgentMessages: true,
+                        title: 'Tutor Acadêmico',
+                        titleAvatarSrc: './images/title-avatar-5.png',
+                        welcomeMessage: 'Olá! Sou o tutor virtual da Faculdade Unyleya. Estou aqui para ajudar com suas dúvidas sobre a disciplina do curso de pós-graduação. Como posso ajudá-lo hoje?',
+                        errorMessage: 'Erro de comunicação com o servidor',
+                        // height: '700',
+                        fontSize: 16,
+                        starterPromptFontSize: 15,
+                        clearChatOnReload: true, // If set to true, the chat will be cleared when the page reloads
+                        sourceDocsTitle: 'Sources:',
+                        renderHTML: true,
+                        botMessage: {
+                            showAvatar: true,
+                            avatarSrc: 'https://play-lh.googleusercontent.com/ZnbITJtDlpOQYZ3gX31JSsGwh0Z-FOH_HxnvXN1CINYsROyQH7haU5TrG9Yr31mVe911=w240-h480-rw',
+                        },
+                        userMessage: {
+                            showAvatar: true,
+                            avatarSrc: 'https://raw.githubusercontent.com/zahidkhawaja/langchain-chat-nextjs/main/public/usericon.png',
+                        },
+                        textInput: {
+                            placeholder: 'Digite sua dúvida',
+                            backgroundColor: '#ffffff',
+                            textColor: '#303235',
+                            sendButtonColor: '#3B81F6',
+                            autoFocus: false,
+                        },
+                        feedback: {
+                            color: '#303235',
+                        },
+                        dateTimeToggle: {
+                            date: true,
+                            time: true,
+                        },
+                        footer: {
+                            textColor: '',
+                            text: '',
+                            company: '',
+                            companyLink: '',
+                        },
                     },
                 },
-            },
-        })
-    </script>
+            });
+        </script>
+    </div>
+</div>
 </body>
 
 </html>
