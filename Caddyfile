@@ -1,5 +1,4 @@
 :{$PORT}
 
-# Serve arquivos da pasta public/
 root * public
 file_server
