@@ -3,9 +3,3 @@
 # Serve arquivos da pasta public/
 root * public
 file_server
-
-# Serve o dist/web.js em /web.js
-handle_path /web.js {
-  root * dist
-  file_server
-}
